@@ -29,6 +29,7 @@ app.get("/api/v1/customers", (req, res, next) => {
   });
 });
 
+// ================================= GET Data BY ID ======================================
 //api utk get data by id menggunakan params untuk memanggil parameter
 app.get("/api/v1/customers/:id", (req, res, next) => {
   console.log(req.params);
@@ -51,15 +52,15 @@ app.get("/api/v1/customers/:id", (req, res, next) => {
     },
   });
 });
+// =============================== END ================================
 
-// ================== PATCH ================================
+// =============================== PATCH ================================
 // API untuk update data
 //put mengharuskan update semua objek data
 //patch hanya spesifik data yg mau diupdate
 
 app.patch("/api/v1/customers/:id", (req, res) => {
   const id = req.params.id;
-  console.log("masuk ga?");
 
   //1. lakukan pencarian data yang sesuai parameter id nya
   const customer = customers.find((cust) => cust._id === id);
@@ -91,16 +92,13 @@ app.patch("/api/v1/customers/:id", (req, res) => {
       res.status(200).json({
         status: "success",
         message: "Berhasil update data",
-        data: {
-          customer: customer[customerIndex],
-          customer,
-        },
       });
     },
   );
 });
+// =============================== END ================================
 
-// ================== POST ================================
+// ======================== POST ================================
 // app.post("/api/v1/customers", (req, res) => {
 //   console.log(req.body);
 //   res.send("selesai"); //harus ada akhiran res dalam rest api dengan express agar tidak mutar terus req nya atau load
@@ -127,60 +125,47 @@ app.post("/api/v1/customers/", (req, res) => {
     },
   );
 });
+// =============================== END ================================
+
+// ======================== DELETE ================================
+app.delete("/api/v1/customers/:id", (req, res) => {
+  const id = req.params.id;
+  //console.log("masuk tidak ya");
+  //1. lakukan pencarian data yang sesuai parameter id nya
+  const customer = customers.find((cust) => cust._id === id);
+  const customerIndex = customers.findIndex((cust) => cust._id === id);
+
+  // // 2. ada gak data customer nya
+  if (!customer) {
+    //pencarian jika data tdk ada
+    return res.status(404).json({
+      status: "fail",
+      message: `Customer dengan ID: ${id}" gak ada`,
+    });
+  }
+  //3. kalau ada berarti delete data nya
+  customers.splice(customerIndex, 1);
+
+  //4. melakukan delete didokumen
+  fs.writeFile(
+    `${__dirname}/data/dummy.json`,
+    JSON.stringify(customers),
+    (err) => {
+      res.status(201).json({
+        status: "success",
+        message: "berhasil delete data",
+        data: {
+          customer: customer[customerIndex],
+          customer,
+        },
+      });
+    },
+  );
+});
 
 app.listen(PORT, () => {
   console.log(`APP running on port : ${PORT}`);
 });
-
-// //api utk get data by id menggunakan params untuk memanggil parameter
-// const getCustomersById = (req, res, next) => {
-//   //shorhcut pemanggilan objek
-//   const id = req.params.id;
-//   //menggunakan array method untuk membntu menemukan spesifik data
-//   const customer = customers.find((cust) => cust._id === id);
-//   //console.log(customer);
-//   res.status(200).json({
-//     status: "success",
-//     data: {
-//       customer,
-//     },
-//   });
-// };
-
-// //API UNTUK DELETE DATA
-// const deleteCustomer = (req, res) => {
-//   const id = req.params.id;
-//   //console.log("masuk tidak ya");
-//   //1. lakukan pencarian data yang sesuai parameter id nya
-//   const customer = customers.find((cust) => cust._id === id);
-//   const customerIndex = customers.findIndex((cust) => cust._id === id);
-
-//   // // 2. ada gak data customer nya
-//   if (!customer) {
-//     //pencarian jika data tdk ada
-//     return res.status(404).json({
-//       status: "fail",
-//       message: `Customer dengan ID: ${id}" gak ada`,
-//     });
-//   }
-//   //3. kalau ada berarti update data nya sesuai request body dari client/user
-//   customers.splice(customerIndex, 1);
-//   //4. melakukan update didokumen
-//   fs.writeFile(
-//     `${__dirname}/data/dummy.json`,
-//     JSON.stringify(customers),
-//     (err) => {
-//       res.status(201).json({
-//         status: "success",
-//         message: "berhasil delete data",
-//         data: {
-//           customer: customer[customerIndex],
-//           customer,
-//         },
-//       });
-//     },
-//   );
-// };
 
 // app.get("/", defaultRouter);
 // app.route("/api/v1/customers").get(getCustomers).post(createCustomer);
@@ -189,7 +174,3 @@ app.listen(PORT, () => {
 //   .get(getCustomersById)
 //   .patch(updateCustomer)
 //   .delete(deleteCustomer);
-
-// app.listen(PORT, () => {
-//   console.log(`APP running on port : ${PORT}`);
-// });
