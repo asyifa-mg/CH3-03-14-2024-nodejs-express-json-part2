@@ -56,9 +56,10 @@ app.get("/api/v1/customers/:id", (req, res, next) => {
 // API untuk update data
 //put mengharuskan update semua objek data
 //patch hanya spesifik data yg mau diupdate
+
 app.patch("/api/v1/customers/:id", (req, res) => {
-  console.log("masuk ga?");
   const id = req.params.id;
+  console.log("masuk ga?");
 
   //1. lakukan pencarian data yang sesuai parameter id nya
   const customer = customers.find((cust) => cust._id === id);
@@ -90,6 +91,10 @@ app.patch("/api/v1/customers/:id", (req, res) => {
       res.status(200).json({
         status: "success",
         message: "Berhasil update data",
+        data: {
+          customer: customer[customerIndex],
+          customer,
+        },
       });
     },
   );
@@ -140,44 +145,6 @@ app.listen(PORT, () => {
 //       customer,
 //     },
 //   });
-// };
-
-// //api untuk update data
-// const updateCustomer = (req, res) => {
-//   const id = req.params.id;
-//   console.log("masuk tidak ya");
-
-//   //1. lakukan pencarian data yang sesuai parameter id nya
-//   const customer = customers.find((cust) => cust._id === id);
-//   const customerIndex = customers.findIndex((cust) => cust._id === id);
-
-//   // 2. ada gak data customer nya
-//   if (!customer) {
-//     //pencarian jika data tdk ada
-//     return res.status(404).json({
-//       status: "fail",
-//       message: `Customer dengan ID: ${id}" gak ada`,
-//     });
-//   }
-//   //3. kalau ada berarti update data nya sesuai request body dari client/user
-//   customers[customerIndex] = { ...customers[customerIndex], ...req.body };
-//   console.log(customers[customerIndex]);
-//   //4. melakukan update didokumen
-//   fs.writeFile(
-//     `${__dirname}/data/dummy.json`,
-//     JSON.stringify(customers),
-//     (err) => {
-//       res.status(201).json({
-//         status: "success",
-//         message: "berhasil update data",
-//         data: {
-//           customer: customer[customerIndex],
-//           customer,
-//         },
-//       });
-//     },
-//   );
-//   //res.status(200).json({});
 // };
 
 // //API UNTUK DELETE DATA
