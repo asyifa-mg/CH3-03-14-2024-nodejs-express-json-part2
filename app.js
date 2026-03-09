@@ -143,11 +143,6 @@ const deleteData = (req, res) => {
 
 // URL
 app.get("/", defaultRouter);
-app.get("/api/v1/customers", getCustomers);
-app.get("/api/v1/customers/:id", getByID);
-app.patch("/api/v1/customers/:id", updateCustomers);
-app.post("/api/v1/customers/", createCustomers);
-app.delete("/api/v1/customers/:id", deleteData);
 
 app.route("/api/v1/customers").get(getCustomers).post(createCustomers);
 
