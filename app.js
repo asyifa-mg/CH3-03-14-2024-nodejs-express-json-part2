@@ -10,16 +10,12 @@ app.use(express.json());
 // inisialisasi untuk membaca data json
 const customers = JSON.parse(fs.readFileSync(`${__dirname}/data/dummy.json`));
 
-// ================== GET ================================
-//anonymous function menggunakan parameter req,res,next
-app.get("/", (req, res, next) => {
+// function
+const defaultRouter = (req, res, next) => {
   res.send("<h1>Hello FSW 1 Tercinta..</h1>");
-});
+};
 
-// memanggil data dummy json yg ada di folder data
-// /api/v1/customers  => merupakan penamaan yg sesuai dengan aturan API dimana nama api terus versi dan collection atau datanya
-//api get all data
-app.get("/api/v1/customers", (req, res, next) => {
+const getCustomers = (req, res, next) => {
   res.status(200).json({
     status: "success",
     totData: customers.length,
@@ -27,11 +23,9 @@ app.get("/api/v1/customers", (req, res, next) => {
       customers,
     },
   });
-});
+};
 
-// ================================= GET Data BY ID ======================================
-//api utk get data by id menggunakan params untuk memanggil parameter
-app.get("/api/v1/customers/:id", (req, res, next) => {
+const getByID = (req, res, next) => {
   console.log(req.params);
   console.log(req.params.id);
   const id = req.params.id;
@@ -51,15 +45,9 @@ app.get("/api/v1/customers/:id", (req, res, next) => {
       customer,
     },
   });
-});
-// =============================== END ================================
+};
 
-// =============================== PATCH ================================
-// API untuk update data
-//put mengharuskan update semua objek data
-//patch hanya spesifik data yg mau diupdate
-
-app.patch("/api/v1/customers/:id", (req, res) => {
+const updateCustomers = (req, res) => {
   const id = req.params.id;
 
   //1. lakukan pencarian data yang sesuai parameter id nya
@@ -95,17 +83,9 @@ app.patch("/api/v1/customers/:id", (req, res) => {
       });
     },
   );
-});
-// =============================== END ================================
+};
 
-// ======================== POST ================================
-// app.post("/api/v1/customers", (req, res) => {
-//   console.log(req.body);
-//   res.send("selesai"); //harus ada akhiran res dalam rest api dengan express agar tidak mutar terus req nya atau load
-// });
-
-//api post atau insert data dummy
-app.post("/api/v1/customers/", (req, res) => {
+const createCustomers = (req, res) => {
   console.log(req.body);
 
   const newCustomer = req.body;
@@ -124,11 +104,9 @@ app.post("/api/v1/customers/", (req, res) => {
       });
     },
   );
-});
-// =============================== END ================================
+};
 
-// ======================== DELETE ================================
-app.delete("/api/v1/customers/:id", (req, res) => {
+const deleteData = (req, res) => {
   const id = req.params.id;
   //console.log("masuk tidak ya");
   //1. lakukan pencarian data yang sesuai parameter id nya
@@ -161,9 +139,24 @@ app.delete("/api/v1/customers/:id", (req, res) => {
       });
     },
   );
-});
+};
+
+// URL
+app.get("/", defaultRouter);
+app.get("/api/v1/customers", getCustomers);
+app.get("/api/v1/customers/:id", getByID);
+app.patch("/api/v1/customers/:id", updateCustomers);
+app.post("/api/v1/customers/", createCustomers);
+app.delete("/api/v1/customers/:id", deleteData);
+
+app.route("/api/v1/customers").get(getCustomers).post(createCustomers);
+
+app
+  .route("/api/v1/customers/:id")
+  .get(getByID)
+  .patch(updateCustomers)
+  .delete(deleteData);
 
 app.listen(PORT, () => {
   console.log(`APP running on port : ${PORT}`);
 });
-
